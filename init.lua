@@ -24,9 +24,7 @@ What is Kickstart?
 
   Kickstart.nvim is *not* a distribution.
 
-  Kickstart.nvim is a starting point for your own configuration.
-    The goal is that you can read every line of code, top-to-bottom, understand
-    what your configuration is doing, and modify it to suit your needs.
+  Kickstart.nvim is a starting point for your own configuration
 
     Once you've done that, you can start exploring, configuring and tinkering to
     make Neovim your own! That might mean leaving Kickstart just the way it is for a while
@@ -91,7 +89,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -102,12 +100,12 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
 
--- Don't show the mode, since it's already in the status line
+-- Don't show the mode, since it's already in the status linebase
 vim.opt.showmode = false
 
 -- Sync clipboard between OS and Neovim.
@@ -176,10 +174,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -331,6 +329,25 @@ require('lazy').setup({
   -- you do for a plugin at the top level, you can do for a dependency.
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
+  -- NOTE: Plugins installed by me Defenge
+
+  {
+    'nvim-neo-tree/neo-tree.nvim',
+    branch = 'v3.x',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-tree/nvim-web-devicons', -- not strictly required, but recommended
+      'MunifTanjim/nui.nvim',
+      '3rd/image.nvim', -- Optional image support in preview window: See `# Preview Mode` for more information
+    },
+  },
+  {
+    'lervag/vimtex',
+    lazy = false,
+    init = function()
+      vim.g.vimtex_view_method = 'zathura'
+    end,
+  },
 
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
@@ -588,15 +605,6 @@ require('lazy').setup({
         end,
       })
 
-      -- Change diagnostic symbols in the sign column (gutter)
-      -- if vim.g.have_nerd_font then
-      --   local signs = { Error = '', Warn = '', Hint = '', Info = '' }
-      --   for type, icon in pairs(signs) do
-      --     local hl = 'DiagnosticSign' .. type
-      --     vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-      --   end
-      -- end
-
       -- LSP servers and clients are able to communicate to each other what features they support.
       --  By default, Neovim doesn't support everything that is in the LSP specification.
       --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
@@ -833,18 +841,154 @@ require('lazy').setup({
     end,
   },
 
+  {
+    'neanias/everforest-nvim',
+    config = function()
+      require('everforest').setup {
+
+        transparent_background_level = 2,
+      }
+    end,
+  },
+
+  {
+    'rose-pine/neovim',
+    config = function()
+      require('rose-pine').setup {
+        variant = 'auto', -- auto, main, moon, or dawn
+        dark_variant = 'main', -- main, moon, or dawn
+        dim_inactive_windows = false,
+        extend_background_behind_borders = true,
+
+        enable = {
+          terminal = true,
+          legacy_highlights = true, -- Improve compatibility for previous versions of Neovim
+          migrations = true, -- Handle deprecated options automatically
+        },
+
+        styles = {
+          bold = true,
+          italic = true,
+          transparency = true,
+        },
+
+        groups = {
+          border = 'muted',
+          link = 'iris',
+          panel = 'surface',
+
+          error = 'love',
+          hint = 'iris',
+          info = 'foam',
+          note = 'pine',
+          todo = 'rose',
+          warn = 'gold',
+
+          git_add = 'foam',
+          git_change = 'rose',
+          git_delete = 'love',
+          git_dirty = 'rose',
+          git_ignore = 'muted',
+          git_merge = 'iris',
+          git_rename = 'pine',
+          git_stage = 'iris',
+          git_text = 'rose',
+          git_untracked = 'subtle',
+
+          h1 = 'iris',
+          h2 = 'foam',
+          h3 = 'rose',
+          h4 = 'gold',
+          h5 = 'pine',
+          h6 = 'foam',
+        },
+
+        palette = {
+          -- Override the builtin palette per variant
+          -- moon = {
+          --     base = '#18191a',
+          --     overlay = '#363738',
+          -- },
+        },
+
+        highlight_groups = {
+          -- Comment = { fg = "foam" },
+          -- VertSplit = { fg = "muted", bg = "muted" },
+        },
+
+        before_highlight = function(group, highlight, palette)
+          -- Disable all undercurls
+          -- if highlight.undercurl then
+          --     highlight.undercurl = false
+          -- end
+          --
+          -- Change palette colour
+          -- if highlight.fg == palette.pine then
+          --     highlight.fg = palette.foam
+          -- end
+        end,
+      }
+    end,
+  },
+
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
+    -- 'slugbyte/lackluster.nvim',
+    'EdenEast/nightfox.nvim',
+    config = function()
+      require('nightfox').setup {
+        options = {
+          -- Compiled file's destination location
+          compile_path = vim.fn.stdpath 'cache' .. '/nightfox',
+          compile_file_suffix = '_compiled', -- Compiled file suffix
+          transparent = true, -- Disable setting background
+          terminal_colors = true, -- Set terminal colors (vim.g.terminal_color_*) used in `:terminal`
+          dim_inactive = false, -- Non focused panes set to alternative background
+          module_default = true, -- Default enable value for modules
+          colorblind = {
+            enable = false, -- Enable colorblind support
+            simulate_only = false, -- Only show simulated colorblind colors and not diff shifted
+            severity = {
+              protan = 0, -- Severity [0,1] for protan (red)
+              deutan = 0, -- Severity [0,1] for deutan (green)
+              tritan = 0, -- Severity [0,1] for tritan (blue)
+            },
+          },
+          styles = { -- Style to be applied to different syntax groups
+            comments = 'NONE', -- Value is any valid attr-list value `:help attr-list`
+            conditionals = 'NONE',
+            constants = 'NONE',
+            functions = 'NONE',
+            keywords = 'NONE',
+            numbers = 'NONE',
+            operators = 'NONE',
+            strings = 'NONE',
+            types = 'NONE',
+            variables = 'NONE',
+          },
+          inverse = { -- Inverse highlight for different types
+            match_paren = false,
+            visual = false,
+            search = false,
+          },
+          modules = { -- List of various plugins and additional options
+            -- ...
+          },
+        },
+        palettes = {},
+        specs = {},
+        groups = {},
+      }
+    end,
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'everforest'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
@@ -902,6 +1046,7 @@ require('lazy').setup({
       auto_install = true,
       highlight = {
         enable = true,
+        disable = { 'latex' },
         -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
         --  If you are experiencing weird indenting issues, add the language to
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
@@ -917,7 +1062,7 @@ require('lazy').setup({
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
 
-  -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
+  -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
 
@@ -937,12 +1082,8 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
+  --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
   -- { import = 'custom.plugins' },
-  --
-  -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
-  -- Or use telescope!
-  -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
-  -- you can continue same window with `<space>sr` which resumes last telescope search
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
